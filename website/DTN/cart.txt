@@ -1,0 +1,6 @@
+Book 24.99
+Cloth 14.99
+SmartPhone 649.99
+SmartPhone 649.99
+Cloth 14.99
+Book 24.99

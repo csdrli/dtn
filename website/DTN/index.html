@@ -27,6 +27,7 @@
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+        
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item active">
@@ -56,8 +57,21 @@
           <div class="card mt-4">
             <img class="card-img-top" src="/image/harrypotter.jpg" width="900" height="400" alt="">
             <div class="card-body">
-              <h3 class="card-title">Book</h3>
-              <h4>$24.99</h4>
+              <form action="/buy" method= "post">
+                Quantity:<br>
+                <input type="number" name="quantity" value="1">
+                <input class="card-title" type="hidden" name="item_name" value="Book">
+                <input type="hidden" name="price" value=24.99>
+                <input type="hidden" name="description" value="This is a Harry Potter Book ">
+
+                <br>
+                <h3 class="card-title">Book</h3>
+                <h4>$24.99</h4>
+                <input type="submit" class="btn btn-primary" value="buy">
+              </form> 
+              <div class="product-quantity">
+              <input class= "xyz" type="number" value="1" min="1">
+              </div>
               <button type="button" class="btn btn-primary" onclick="location.href='/buy?item=Book&price=24.99';">Buy</button>
               <p class="card-text">This is a Harry Potter Book</p>
               <span class="text-warning">&#9733; &#9733; &#9733; &#9733; &#9733;</span>

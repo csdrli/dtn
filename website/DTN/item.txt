@@ -1,0 +1,4 @@
+{product: "Book", price: "24.99" , description: "This is a Harry Potter Book"	, imgurl:"/image/harrypotter.jpg"}
+{product: "Cloth", 	price: "14.99" 	description: "This is a Winterwear", imgurl: "https://www.burton.com/static/productW18/13211103960_1.png?impolicy=bglt&imwidth=246"}
+{product: "Smartphone", price:"649.99" 	description: "This is an Iphone" imgurl: "/image/iphone.jpg"}
+{product: "HP Laptop", price: "749.99", description: "This is a HP Laptop", imgurl: "/image/hp.png"}

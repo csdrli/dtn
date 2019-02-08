@@ -1,0 +1,6 @@
+{
+"product_no_1": {"Name": "Book", "Price": 24.99 , "Description": "This is a Harry Potter Book"	, "Img":"/image/harrypotter.jpg"},
+"product_no_2": {"Name": "Cloth", 	"Price": 14.99 ,"Description": "This is a Winterwear", "Img": "https://www.burton.com/static/productW18/13211103960_1.png?impolicy=bglt&imwidth=246"},
+"product_no_3": {"Name": "Smartphone", "Price": 649.99 	,"Description": "This is an Iphone" ,"Img": "/image/iphone.jpg"},
+"product_no_4": {"Name": "HP Laptop", "Price": 749.99, "Description": "This is a HP Laptop", "Img": "/image/hp.png"}
+}

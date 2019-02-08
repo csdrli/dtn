@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "async": "^2.6.1",
     "express": "^4.16.4",
+    "firebase": "^5.8.2",
+    "firebase-admin": "^7.0.0",
     "pug": "^2.0.3",
     "startbootstrap-shop-item": "^4.1.1"
   }

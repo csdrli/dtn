@@ -12,8 +12,11 @@
   "dependencies": {
     "async": "^2.6.1",
     "express": "^4.16.4",
+    "express-session": "^1.15.6",
     "firebase": "^5.8.2",
     "firebase-admin": "^7.0.0",
+    "node-sass": "^4.11.0",
+    "node-sass-middleware": "^0.11.0",
     "pug": "^2.0.3",
     "startbootstrap-shop-item": "^4.1.1"
   }

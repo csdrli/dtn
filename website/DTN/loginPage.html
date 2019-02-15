@@ -1,0 +1,49 @@
+<html>
+<head>
+    <title>Log In</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Bootstrap core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <!-- <link href="css/css/style.css" rel="stylesheet"> -->
+</head>
+
+<body>
+<div id="login">   
+    <h1>Login (Welcome Back)!</h1>
+    
+    <form action="/login" method="post">
+    
+      <div class="field-wrap">
+      <label>
+        Email Address<span class="req">*</span>
+      </label>
+      <input type="email" name="email" required autocomplete="off"/>
+    </div>
+    
+    <div class="field-wrap">
+      <label>
+        Password 1<span class="req">*</span>
+      </label>
+      <input type="password" name="password1" required autocomplete="off"/>
+    
+    </div>
+    <div class="field-wrap">
+      <label>
+        Password 2<span class="req">*</span>
+      </label>
+      <input type="password" name="password2" required autocomplete="off"/>
+    </div>
+    
+    <p class="forgot"><a href="#">Forgot Password?</a></p>
+    
+    <button class="button button-block"/>Log In</button>
+    
+    </form>
+
+  </div>
+</body>

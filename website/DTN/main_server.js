@@ -46,6 +46,9 @@ var cart= [];
 app.get('/',function(req,res){
 	res.sendFile(path.join(__dirname +'/signup.html'));
 	});
+app.get('/loginPage',function(req,res){
+	res.sendFile(path.join(__dirname +'/loginPage.html'));
+	});
 app.get('/home',function(req,res){
 	sess=req.session;
 	console.log('check check miek check' + sess.email);

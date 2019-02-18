@@ -15,3 +15,4 @@
 2. Pull the repository
 3. Go to terminal and access the repository exmaple: `cd ~/dtn/website/DTN`
 4. Run `node main_server.js`
+5. Open browser and enter (http://localhost:3000/)

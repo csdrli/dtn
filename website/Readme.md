@@ -11,7 +11,7 @@
 2. Now we are able to generate express projects using commands `express <folder name>`<br />
 
 # Steps to follow 
-1. The dependencies are already installed in the dtn folder.
+1. The dependencies are already installed in the DTN folder.
 2. Pull the repository
 3. Go to terminal and access the repository exmaple: `cd ~/dtn/website/DTN`
 4. Run `node main_server.js`

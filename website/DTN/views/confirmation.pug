@@ -8,7 +8,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Cart</title>
+    <title>Confirmation</title>
 
     <!-- Bootstrap core CSS -->
     <!--<link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
@@ -20,20 +20,11 @@
 
   </head>
 
-<h1>Cart</h1>
-
-<div class="shopping-cart">
-
-  <div class="column-labels">
-    <label class="product-image">Image</label>
-    <label class="product-details">Product</label>
-    <label class="product-price">Price</label>
-    <label class="product-quantity">Quantity</label>
-    <label class="product-removal">Remove</label>
-    <label class="product-line-price">Total</label>
-  </div>
+  <body>
+  
+  <div class="shopping-cart">
       ul
-        each item in message
+        each item in cart 
           <div class="product">
             <div class="product-image">
               img(src= item.Img)
@@ -53,7 +44,7 @@
               div= item.Quantity
             </div>
             <div class="product_removal">
-              <form action="/remove" method= "post">
+              <form action="/confirmation" method= "post">
                     Quantity
                     <p>
                     input(type="hidden",name="Img",value=item.Img)
@@ -72,42 +63,16 @@
                     <p>
                     input(type="hidden",name="quantity",value=item.Quantity)
                     <p>
-                    <input type="submit" class="btn btn-primary" value="Remove">
               </form> 
             </div>
             <div class="product-line-price">
-              div= (item.Subtotal).toFixed(2)
+              div= item.Subtotal
             </div>
           </div>       
 </div>
-
-  <div class="totals">
-    <div class="totals-item">
-      <label>Subtotal</label>
-      <div class="totals-value" id="cart-subtotal">
-        div= total
-      </div>
-    </div>
-    <div class="totals-item">
-      <label>Tax (5%)</label>
-      <div class="totals-value" id="cart-tax">
-        div= (total*0.05).toFixed(2)
-      </div>
-    </div>
-    <div class="totals-item">
-      <label>Shipping</label>
-      <div class="totals-value" id="cart-shipping">15.00</div>
-    </div>
-    <div class="totals-item totals-item-total">
-      <label>Grand Total</label>
-      <div class="totals-value" id="cart-total">
-        div= (1.05*total+15.00).toFixed(2)
-      </div>
-    </div>
-  </div>
-      
-      <button class="checkout" onclick="location.href='/checkout'">Checkout</button>
-<body> 
-  <br>
-  <li class="tab active"><a href="/home"> Go to Home</a></li>
+<body>
+     <p> Order has been placed </br>
+     <i> Thank You for choosing DTN 
+      <br><br>
+      <li class="tab active"><a href="/home"> Go to Home</a></li>
 </body>

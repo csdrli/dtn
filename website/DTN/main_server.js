@@ -51,7 +51,7 @@ app.get('/loginPage',function(req,res){
 	});
 app.get('/home',function(req,res){
 	sess=req.session;
-	console.log('check check miek check' + sess.email);
+	console.log('sess email =' + sess.email);
 		// var myRef = admin.database().ref('Products');
 	
 		// var newData={
@@ -233,13 +233,18 @@ app.post('/remove', function(req,res){
 
 		for(var i = 0 ; i < data.length; i++){
 			if (data[i].email=== email){
+				console.log("data.cart " + JSON.stringify(data[i].cart));
 				for(var j = 0; j < data[i].cart.length; j++){
-						if(data[i].cart[j].Name!== itemName && data[i].cart[j].Quantity !== quantity){
+						if(data[i].cart[j].Name=== itemName && data[i].cart[j].Quantity === quantity){
+							continue;
+							
+						}
+						else {
 							new_cart.push(data[i].cart[j]);
-							total += data[i].cart[j].Subtotal
-			
+							total += data[i].cart[j].Subtotal	
 						};
 				};
+				console.log("new_cart" + JSON.stringify(new_cart));
 				data[i].cart = new_cart;
 			}; 
 		};
@@ -254,6 +259,49 @@ app.post('/remove', function(req,res){
 
 
 });
+app.get('/checkout',function(req,res){
+	sess = req.session;
+	var email = sess.email;
+	const cart_data = fs.readFileSync('cart.json');
+	const data = JSON.parse(cart_data);
+	for(var i =0 ; i < data.length; i++){
+	if (data[i].email=== email){
+		console.log("Order has been Placed")
+		console.log(data[i]);
+		var s_data = JSON.stringify(data[i]);
+		console.log(s_data);
+		res.render('confirmation',{cart:data[i]})
+
+	}; 
+	};
+	fs.writeFile('order.json',JSON.stringify(data), function(err, cart){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+	});
+});
+
+app.get('/buy',function(req,res){
+	sess = req.session
+	var email = sess.email
+	var cart = [];
+	const cart_data = fs.readFileSync('cart.json');
+	const data = JSON.parse(cart_data);
+	for(var i =0 ; i < data.length; i++){
+		if (data[i].email=== email){
+			cart= data[i].cart;
+			break;
+		}
+
+		};
+	var total = 0;
+	for (i=0; i < cart.length;i++){
+		total += cart[i].Subtotal
+	};
+	res.render('cart_index', {message: cart,total:total.toFixed(2)})
+});
 app.get('/route',function(req,res){
 	var str = '';
 	fs.readFileSync('cart.txt').toString().split('\n').forEach(function(line){
@@ -262,5 +310,9 @@ app.get('/route',function(req,res){
 
 		//str= str.concat(newline)})
 	//res.send(fs.readFileSync('cart.txt').toString())
+});
+app.get('/logout', function(req,res){
+	req.session.destroy();
+	res.redirect('/');
 });
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

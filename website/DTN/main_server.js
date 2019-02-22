@@ -262,25 +262,56 @@ app.post('/remove', function(req,res){
 app.get('/checkout',function(req,res){
 	sess = req.session;
 	var email = sess.email;
-	const cart_data = fs.readFileSync('cart.json');
-	const data = JSON.parse(cart_data);
-	for(var i =0 ; i < data.length; i++){
-	if (data[i].email=== email){
-		console.log("Order has been Placed")
-		console.log(data[i]);
-		var s_data = JSON.stringify(data[i]);
-		console.log(s_data);
-		res.render('confirmation',{cart:data[i]})
+	var cart_data = fs.readFileSync('cart.json');
+	var order_data = fs.readFileSync('order.json');
+	var data = JSON.parse(cart_data);
+	var order_parse_data = JSON.parse(order_data);
+	var s_data = [];
+	var a_data =[];
 
-	}; 
-	};
-	fs.writeFile('order.json',JSON.stringify(data), function(err, cart){
+	for(var i =0 ; i < data.length; i++){
+		if (data[i].email=== email){
+			console.log("Order has been Placed")
+			
+			var s_data = data[i].cart;
+			
+			data[i].cart = [];
+			
+		
+	}};
+	var email_in_order = false
+	for(var i =0 ; i < order_parse_data.length; i++){
+		if (order_parse_data[i].email=== email){
+			var a_data = order_parse_data[i];
+			console.log(a_data);
+			var i_order = a_data.order;
+			console.log(i_order);	
+			var next_order = i_order.length+1;
+			order_parse_data[i].order.push({"id": next_order, "cart": s_data});
+			email_in_order = true;
+			break;
+		}};
+	if(email_in_order !== true){
+		var order_with_id = {"id": 1, "cart":s_data};
+
+		order_parse_data.push({"email":email,"order": [order_with_id]});
+	}
+	
+	fs.writeFile('order.json',JSON.stringify(order_parse_data), function(err, cart){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
 		};
 		console.log("Successfully Written to File.");
 	});
+	fs.writeFile('cart.json',JSON.stringify(data), function(err, cart){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+	});
+	res.render('confirmation',{cart:s_data})
 });
 
 app.get('/buy',function(req,res){

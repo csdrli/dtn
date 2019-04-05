@@ -88,22 +88,56 @@ app.post('/signup',function(req,res){
 	var email = req.body.email;
 	var password1 = req.body.password1;
 	var password2 = req.body.password2;
-	var signup_data = fs.readFileSync('user.json');
+	var bool_is_central = false; // for signup confirmation
+	var connection = true;
+		//=> true
+
+	// var dns = require('dns');
+	// kp = dns.lookupService("8.8.8.8", 53, function(err, std, sti) {if (err) {connection = false; return false;} else {return true}  })
+	// dns.resolve('www.google.com',function(err){
+	// 	console.log(err);
+	// 	if(err){
+	// 		console.log("No Connection")
+	// 		connection = false
+	// 	}
+	// });
 	// console.log(signup_data);
-	var signup = JSON.parse(signup_data);
-	for(var i = 0 ; i < signup.length; i++){
-		if (signup[i].email === email){res.send("This email is unavailable")};
-	};
-	var usr_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2}
-	signup.push(usr_list);
+	console.log("connection error")
+	console.log(connection);
 	console.log(signup);
-	fs.writeFile('user.json',JSON.stringify(signup), function(err, signup){
+	var usr_list = {connection:connection,fname:fname,lname:lname, email:email, password1:password1 , password2:password2};
+	console.log(usr_list);
+	
+	fs.writeFile('signup_order/'+'user_'+email+'.temp.json',JSON.stringify(usr_list), function(err, signup){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
 		};
     console.log("Successfully Written to File.");
 	});
+	////for confirmation of signup orders
+	if(usr_list.connection){
+		var signup_data = fs.readFileSync('signup_central.json');
+		var signup = JSON.parse(signup_data);
+		for(var i = 0 ; i < signup.length; i++){
+			if (signup[i].email === email){res.send("This email is unavailable")};
+		};
+		signup.push(usr_list);
+		fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
+			if (err) {
+				console.log(err)
+				res.status(404).end();
+			};
+			console.log("Successfully Written to File.");
+		});
+	}
+	// for(i=0; i < signup.length; i++){
+	// 		if(signup[i].email == email){
+	// 			console.log("Signup is not valid")
+	// 			res.send("Signup is not valid")
+	// 			return;
+	// 		}
+	// }
 	sess= req.session;
 	sess.email = email;
 	res.redirect('/home');
@@ -207,6 +241,7 @@ app.post('/buy',function(req,res){
 			};
 			console.log("Successfully Written to File.");
 		});
+		
 		// console.log(cart)
 		var total = 0;
 		for (i=0; i < login[k].cart.length;i++){
@@ -283,21 +318,51 @@ app.get('/checkout',function(req,res){
 	for(var i =0 ; i < order_parse_data.length; i++){
 		if (order_parse_data[i].email=== email){
 			var a_data = order_parse_data[i];
-			console.log(a_data);
+			//console.log(a_data);
 			var i_order = a_data.order;
-			console.log(i_order);	
+			//console.log(i_order);	
 			var next_order = i_order.length+1;
+			order_single_user = {"id": next_order , "cart": s_data};
 			order_parse_data[i].order.push({"id": next_order, "cart": s_data});
 			email_in_order = true;
 			break;
 		}};
 	if(email_in_order !== true){
 		var order_with_id = {"id": 1, "cart":s_data};
-
+		order_single_user = {"email":email, "order": order_with_id}; // for the seperate files 
 		order_parse_data.push({"email":email,"order": [order_with_id]});
 	}
-	
+	console.log(details.length)
+	console.log(s_data.length)
+	/// for validating the order, looking at the no of stocks 
+  for(key in details){
+		for(j=0 ; j < s_data.length; j++){
+			console.log(typeof details[key].Name);
+			console.log(typeof s_data[j].Name);
+			if(details[key].Name == s_data[j].Name && details[key].Stock < s_data[j].Quantity){
+				console.log("order is not valid")
+				res.send("Order is not valid")
+				return;
+			}
+		}
+	}
+	for(key in details){
+		console.log("excersg");
+		for(j = 0 ; j < s_data.length; j++){
+			if(details[key].Name === s_data[j].Name){
+				details[key].Stock = details[key].Stock- s_data[j].Quantity
+			}
+		}
+	}
+
 	fs.writeFile('order.json',JSON.stringify(order_parse_data), function(err, cart){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+	});
+	fs.writeFile('signup_order/'+'order_'+email+'.temp.json',JSON.stringify(order_single_user), function(err, cart){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
@@ -312,6 +377,13 @@ app.get('/checkout',function(req,res){
 		console.log("Successfully Written to File.");
 	});
 	res.render('confirmation',{cart:s_data})
+	fs.writeFile('item.json',JSON.stringify(details), function(err, cart){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+	});
 });
 
 app.get('/buy',function(req,res){
@@ -346,4 +418,12 @@ app.get('/logout', function(req,res){
 	req.session.destroy();
 	res.redirect('/');
 });
+
+// code for fetching the temp files and comparing it with the central databse
+app.use('/',function central(req,res){
+	sess = req.session;
+	email = sess.email;
+	console.log("lalal"+ email);
+});
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))

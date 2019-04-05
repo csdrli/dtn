@@ -16,9 +16,11 @@
     "express-session": "^1.15.6",
     "firebase": "^5.8.2",
     "firebase-admin": "^7.0.0",
+    "is-online": "^8.1.0",
     "node-sass": "^4.11.0",
     "node-sass-middleware": "^0.11.0",
     "pug": "^2.0.3",
+    "queued-socket.io": "^1.0.5",
     "startbootstrap-shop-item": "^4.1.1"
   },
   "devDependencies": {

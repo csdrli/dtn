@@ -137,7 +137,7 @@ app.post('/signup',function(req,res){
 		var signup_data = fs.readFileSync('signup_central.json');
 		var signup = JSON.parse(signup_data);
 		//for(var i = 0 ; i < signup.length; i++){
-		if (signup_data === []){
+		if (signup_data === {}){
 				signup.push(usr_list)
 				fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
 					if (err) {
@@ -147,7 +147,6 @@ app.post('/signup',function(req,res){
 					console.log("Successfully Written to File.");
 				});
 		};
-		signup.email= usr_list;
 	for(i=0; i < signup.length; i++){
 			if(signup[i].email == email){
 				console.log("Signup is not valid")
@@ -155,6 +154,8 @@ app.post('/signup',function(req,res){
 				return;
 			}
 	}
+	var users_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2}
+	signup.push(users_list)
 	fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
 		if (err) {
 			console.log(err)
@@ -185,7 +186,7 @@ app.post('/login',function(req,res){
 	var password1 = req.body.password1;
 	var password2 = req.body.password2;
 	// // admin.auth().signInWithEmailAndPassword(email, password)
-	const login_data = fs.readFileSync('user.json');
+	const login_data = fs.readFileSync('signup_central.json');
 	const login = JSON.parse(login_data);
 	console.log(login);
 	for (var i =0 ; i < login.length ; i++){
@@ -193,7 +194,10 @@ app.post('/login',function(req,res){
 		if (email == login[i].email && password1 == login[i].password1 && password2 == login[i].password2 ){
 			sess.email=email;
 			res.redirect('/home')
-		};
+		}
+		else{
+			res.send("user name and password not valid")
+		}
 	};
 
 	// then(function(userRecord)

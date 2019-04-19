@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const port = 3000
+var sign_up_id = 1;
 var path    = require("path");
 var bodyParser = require('body-parser');
 var session = require('express-session');
@@ -21,6 +22,11 @@ details_split = fs.readFileSync("item.json")//.split('\n')//.forEach(function(li
 var details = JSON.parse(details_split)
 //var details = words.
 console.log(details)
+
+function getSignupID() {
+	sign_up_id = sign_up_id + 1;
+	return sign_up_id - 1;
+	}
 
 //console.log(details["product_no_1"])
 // function writeUserData(product, price,description, imgUrl) {
@@ -102,13 +108,25 @@ app.post('/signup',function(req,res){
 	// 	}
 	// });
 	// console.log(signup_data);
-	console.log("connection error")
-	console.log(connection);
-	console.log(signup);
-	var usr_list = {connection:connection,fname:fname,lname:lname, email:email, password1:password1 , password2:password2};
+	var usr_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2};
+	var user_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2}
 	console.log(usr_list);
-	
-	fs.writeFile('signup_order/'+'user_'+email+'.temp.json',JSON.stringify(usr_list), function(err, signup){
+	file_counts= fs.readFileSync("count.json"); // for counting the signup 
+	track_count = JSON.parse(file_counts)
+	count = track_count.count;
+	console.log("This is signup no" + count)
+	var user_list_string = JSON.stringify(user_list,null,2)
+	user_list_string += "\n====="
+	fs.writeFile('requests/sign_up_requests/'+'signup'+count+'.json',user_list_string, function(err, signup){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+    console.log("Successfully Written to File.");
+	});
+
+	counts = {"count": count+1}; 
+	fs.writeFile("count.json",JSON.stringify(counts), function(err, signup){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
@@ -116,28 +134,36 @@ app.post('/signup',function(req,res){
     console.log("Successfully Written to File.");
 	});
 	////for confirmation of signup orders
-	if(usr_list.connection){
 		var signup_data = fs.readFileSync('signup_central.json');
 		var signup = JSON.parse(signup_data);
-		for(var i = 0 ; i < signup.length; i++){
-			if (signup[i].email === email){res.send("This email is unavailable")};
+		//for(var i = 0 ; i < signup.length; i++){
+		if (signup_data === []){
+				signup.push(usr_list)
+				fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
+					if (err) {
+						console.log(err)
+						res.status(404).end();
+					};
+					console.log("Successfully Written to File.");
+				});
 		};
-		signup.push(usr_list);
-		fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
-			if (err) {
-				console.log(err)
-				res.status(404).end();
-			};
-			console.log("Successfully Written to File.");
-		});
+		signup.email= usr_list;
+	for(i=0; i < signup.length; i++){
+			if(signup[i].email == email){
+				console.log("Signup is not valid")
+				res.send("Signup is not valid")
+				return;
+			}
 	}
-	// for(i=0; i < signup.length; i++){
-	// 		if(signup[i].email == email){
-	// 			console.log("Signup is not valid")
-	// 			res.send("Signup is not valid")
-	// 			return;
-	// 		}
-	// }
+	fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+	});
+
+
 	sess= req.session;
 	sess.email = email;
 	res.redirect('/home');

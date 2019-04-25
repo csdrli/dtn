@@ -197,3 +197,68 @@ or you can use
 ```
 killm
 ```
+
+# ------------------------------------------------------------------------------------------
+
+Response Sender - server
+```
+#/bin/sh
+
+SOURCE=ipn:1.1
+DESTINATION=ipn:2.1
+while true
+do
+for FILE in /home/kaushik/Desktop/dtn/website/DTN/requests/sign_up_requests/*;
+do
+FILENAME=$(basename "$FILE" .json)
+if [[ $FILENAME =~ .*order.* ]]
+then
+	#echo "$FILENAME It's an order file"
+	LAST_ORDER=$(awk 'NR==1{print $NF}' record.csv)	
+	NEW_ORDER_NUMBER=$(echo $FILENAME | sed 's/[^0-9]*//g')
+	LAST_SENT_ORDER_NUMBER=$(echo $LAST_ORDER | sed 's/[^0-9]*//g')
+	if [ $(($NEW_ORDER_NUMBER + 0)) -gt $(($LAST_SENT_ORDER_NUMBER + 0)) ]
+	then
+		
+		bpsendfile $SOURCE $DESTINATION "$FILE"
+		sed -i "1s/$/, $FILENAME.json/" record.csv	
+		echo "$FILENAME.json sent and added to the record."
+	fi
+
+fi
+if [[ $FILENAME =~ .*signup.* ]]
+then
+	#echo "$FILENAME It's a signup file"
+	LAST_SIGNUP=$(awk 'NR==2{print $NF}' record.csv)	
+	NEW_SIGNUP_NUMBER=$(echo $FILENAME | sed 's/[^0-9]*//g')
+        LAST_SENT_SIGNUP_NUMBER=$(echo $LAST_SIGNUP | sed 's/[^0-9]*//g')
+	if [ $(($NEW_SIGNUP_NUMBER + 0)) -gt $(($LAST_SENT_SIGNUP_NUMBER)) ]
+        then
+		LAST_STRING=$(tail -1 $FILE)	
+		if [ $LAST_STRING == "=====" ]
+		then
+			sed -i "1 i $FILENAME.json" $FILE
+			echo "$FILENAME.json is sent over DTN"
+			bpsendfile $SOURCE $DESTINATION "$FILE"
+			sed -i "2s/$/, $FILENAME.json/" record.csv
+			echo "$FILENAME.json sent and added to the record."
+		fi
+	fi
+fi
+if [[ $FILENAME =~ .*catalog.* ]]
+then
+	#echo "$FILENAME It's a catalog file"
+	LAST_CATALOG=$(awk 'NR==3{print $NF}' record.csv)	
+	NEW_CATALOG_NUMBER=$(echo $FILENAME | sed 's/[^0-9]*//g')
+        LAST_SENT_CATALOG_NUMBER=$(echo $LAST_CATALOG | sed 's/[^0-9]*//g')
+	if [ $(($NEW_CATALOG_NUMBER + 0)) -gt $(($LAST_SENT_CATALOG_NUMBER)) ]
+        then
+                bpsendfile $SOURCE $DESTINATION "$FILE"
+                sed -i "3s/$/, $FILENAME.json/" record.csv
+		echo "$FILENAME.json sent and added to the record."
+        fi
+
+fi
+done
+done
+```

@@ -159,3 +159,41 @@ Host 2 must run this command:
 ```
 ionstart -I host2.rc
 ```
+
+##   Examples
+The following examples can be used to get started.
+
+#### Hello World
+Enter the follow lines into the terminal. Hit ^C to exit bpsink after verifying the payload has been delivered.
+```
+echo "Hello, World!" | bpsource ipn:1.1
+bpsink ipn:1.1
+# ^C to exit bpsink
+```
+A slightly unreliable single line hello world example is below.
+```
+{ echo "Hello, World!"; sleep 1; } | bpchat ipn:1.1 ipn:1.1
+```
+#### Chat
+Use two terminals to enter the following commands. Enter text and hit enter to transfer the line to the other terminal. Hit ^C to exit.
+```
+# host1 terminal
+bpchat ipn:1.1 ipn:2.1
+# ^C to exit bpchat
+```
+```
+# host2 terminal
+bpchat ipn:2.1 ipn:1.1
+# ^C to exit bpchat
+```
+
+# Stopping ION
+
+Any ION can be stopped bu using the following program
+```
+ionstop
+```
+or you can use
+```
+killm
+```

@@ -119,3 +119,42 @@ a plan 1 tcp/192.168.56.101:4556
 a plan 2 tcp/192.168.56.102:4556
 ## end ipnadmin
 ```
+
+The code for the configuration file host2.rc is:
+```
+## Run the following command to start ION node:
+##% ionstart -I “host2.rc”
+
+## begin ionadmin
+# ionrc configuration file for host2 in a 2node stcp test.
+# This uses stcp as the primary convergence layer.
+# command: % ionadmin host2.ionrc
+# This command should be run FIRST.
+# Initialization command (command 2).
+# Set this node to be node 2 (as in ipn:2).
+# Use default sdr configuration (empty configuration file name “”).
+1 2 ''
+# start ion node
+s
+## end ionadmin
+
+## begin bpadmin
+# bprc configuration file for host2 in a 2node test.
+#Command: % bpadmin host2.bprc
+1
+a scheme ipn 'ipnfw' 'ipnadminep'
+a endpoint ipn:2.0 q
+a endpoint ipn:2.1 q
+a endpoint ipn:2.2 q
+a protocol tcp 1400 100
+a induct tcp 192.168.56.102:4556 tcpcli
+a outduct tcp 192.168.56.102:4556 tcpclo
+a outduct tcp 192.168.56.101:4556 tcpclo
+s
+## end bpadmin
+
+## begin ipnadmin
+a plan 2 tcp/192.168.56.102:4556
+a plan 1 tcp/192.168.56.101:4556
+## end ipnadmin
+```

@@ -1,0 +1,81 @@
+# Setting UP DTN ION
+
+### Software Requirements
+ION requires the following software packages:
+
+- Modern *nix OS: Currently tested on Ubuntu Linux (8.04, 7.10, 7.04), Gentoo  Linux, Fedora Core (3, 7), Apple OSX (10.5) and Solaris 10. Almost any 2.6 series or later Linux kernel should work.
+- Standard GNU core tools (tar, gzip, etc).
+- Standard GNU build tools (gcc, make).
+- Optionally, the Expat XML parser (and development libraries).
+- The POSIX Threading library (pthreads).
+- Pod2man (perl tool for creating documentation files).
+- For now, root privileges (via sudo) for installation.
+- GNU autotools (autoconf, automake, libtool) make installation much easier, but are optional.
+- Sed and awk required for some helper scripts.
+
+### Setting Up
+First, download and extract the source code.
+```bash
+wget 'http://downloads.sourceforge.net/project/ion-dtn/ion-3.4.0b.tar.gz'
+tar -zxvf ion-3.4.0b.tar.gz
+cd ion-open-source/
+```
+### Compiling Ion using autotools (suggested)
+
+Follow the standard autoconf method for compiling the project. In the base ION directory run:
+```bash
+./configure
+```
+
+Then compile with:
+```
+make
+```
+
+After successful compilation, you should test that your system runs ION properly. This test currently sends data using ION over loopback. A secondary test is run for Apple OSX users, and it may require some modification in the amount of available shared memory (details are given in the output):
+
+```
+make test
+```
+Finally, install (requires root privileges):
+```
+sudo make install
+```
+Autotools will usually install packages such as this in the /usr/local/ directory tree. This is where the example configuration files and a copy of this tutorial will end up (that is, in the share/ion subdirectory). Please move on to post-installation. Note that if you do not have root privileges, or would like to only run ION locally, then adding the entire build directory to your PATH is advised - almost every ION-related program will attempt to call several others and will expect that they exist in the PATH.
+
+## Quick Start Guide
+Programs in Ion
+The following tools are available to you after ION is built:
+
+##### Daemon and Configuration:
+ionadmin is the administration and configuration interface for the local ION node contacts and manages shared memory resources used by ION.
+ltpadmin is the administration and configuration interface for LTP operations on the local ION node.
+bsspadmin is the administrative interface for operations of the Bundle Streaming Service Protocol on the local ion node.
+bpadmin is the administrative interface for bundle protocol operations on the local ion node.
+ipnadmin is the administration and configuration interface for the IPN addressing system and routing on the ION node. (ipn:)
+dtn2admin is the administration and configuration interface for the DTN addressing system and routing on the ION node. (dtn://)
+killm is a script which tears down the daemon and any running ducts on a single machine (use ionstop instead).
+ionstart is a script which completely configures an ION node with the proper configuration file(s).
+ionstop is a script which completely tears down the ION node.
+ionscript is a script which aides in the creation and management of configuration files to be used with ionstart.
+##### Simple Sending and Receiving:
+bpsource and bpsink are for testing basic connectivity between endpoints. bpsink listens for and then displays messages sent by bpsource.
+bpsendfile and bprecvfile are used to send files between ION nodes.
+##### Testing and Benchmarking:
+bpdriver benchmarks a connection by sending bundles in two modes: request-response and streaming.
+bpecho issues responses to bpdriver in request-response mode.
+bpcounter acts as receiver for streaming mode, outputting markers on receipt of data from bpdriver and computing throughput metrics.
+
+# Setting up the 2node ring
+This network is created by running the following command on Host 1:
+```
+ionstart host1.rc
+```
+Host 2 must run this command:
+```
+ionstart host2.rc
+```
+Note that you can use 2 different virtual machine and set up the a host-only network between them where host1 has the ip ```192.168.56.101``` and host2 has the ip ```192.168.56.102```.
+
+The configuration files are found in the ```configs/2node-stcp ```directory:
+![alt text](https://compsat.files.wordpress.com/2014/09/2node.png)

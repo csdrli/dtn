@@ -262,3 +262,21 @@ fi
 done
 done
 ```
+
+Code to receive the files:
+```
+#bin/sh
+
+OWN_ENDPOINT=ipn:2.1
+
+mkdir -p response
+
+while true
+do
+	bprecvfile $OWN_ENDPOINT 1
+	line=$(head -n 1 testfile1)
+	mv testfile1 response/$line
+	sed -i '1d; $d' response/$line
+	echo "Received $line file."
+done
+```

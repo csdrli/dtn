@@ -79,3 +79,43 @@ Note that you can use 2 different virtual machine and set up the a host-only net
 
 The configuration files are found in the ```configs/2node-stcp ```directory:
 ![alt text](https://compsat.files.wordpress.com/2014/09/2node.png)
+
+THe configuration file for host1.rc is:
+```
+## Run the following command to start ION node: 
+##% ionstart -I "host1.rc"
+
+## begin ionadmin 
+# ionrc configuration file for host1 in a 2 stcp method test. 
+# This uses STCP as the primary convergence layer. 
+# command:% ionadmin host1.ionrc 
+# This command should be run FIRST. 
+# Initialization command (command 1). 
+# Set this node to be node 1 (as in ipn: 1). 
+# Use default sdr configuration (empty configuration file name ""). 
+1 1 '' 
+# start ion node 
+s 
+## end ionadmin
+
+## begin bpadmin 
+# bprc configuration file for host1 in a 2 test method. 
+#Command:% bpadmin host1.bprc
+1
+a scheme ipn 'ipnfw' 'ipnadminep'
+a endpoint ipn:1.0 q
+a endpoint ipn:1.1 q
+a endpoint ipn:1.2 q
+a protocol tcp 1400 100 
+a induct tcp 192.168.56.101:4556 tcpcli 
+a outduct tcp 192.168.56.101:4556 tcpclo 
+a outduct tcp 192.168.56.102:4556 tcpclo 
+s 
+## end bpadmin
+
+## begin ipnadmin
+
+a plan 1 tcp/192.168.56.101:4556
+a plan 2 tcp/192.168.56.102:4556
+## end ipnadmin
+```

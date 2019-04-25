@@ -67,15 +67,8 @@ bpecho issues responses to bpdriver in request-response mode.
 bpcounter acts as receiver for streaming mode, outputting markers on receipt of data from bpdriver and computing throughput metrics.
 
 # Setting up the 2node ring
-This network is created by running the following command on Host 1:
-```
-ionstart host1.rc
-```
-Host 2 must run this command:
-```
-ionstart host2.rc
-```
-Note that you can use 2 different virtual machine and set up the a host-only network between them where host1 has the ip ```192.168.56.101``` and host2 has the ip ```192.168.56.102```.
+
+You can use 2 different virtual machine and set up the a host-only network between them where host1 has the ip ```192.168.56.101``` and host2 has the ip ```192.168.56.102```.
 
 The configuration files are found in the ```configs/2node-stcp ```directory:
 ![alt text](https://compsat.files.wordpress.com/2014/09/2node.png)
@@ -157,4 +150,12 @@ s
 a plan 2 tcp/192.168.56.102:4556
 a plan 1 tcp/192.168.56.101:4556
 ## end ipnadmin
+```
+This network is setup by running the following command on Host 1:
+```
+ionstart -I host1.rc
+```
+Host 2 must run this command:
+```
+ionstart -I host2.rc
 ```

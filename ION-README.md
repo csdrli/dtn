@@ -218,10 +218,15 @@ then
 	LAST_SENT_ORDER_NUMBER=$(echo $LAST_ORDER | sed 's/[^0-9]*//g')
 	if [ $(($NEW_ORDER_NUMBER + 0)) -gt $(($LAST_SENT_ORDER_NUMBER + 0)) ]
 	then
-		
-		bpsendfile $SOURCE $DESTINATION "$FILE"
-		sed -i "1s/$/, $FILENAME.json/" record.csv	
-		echo "$FILENAME.json sent and added to the record."
+		LAST_STRING=$(tail -1 $FILE)
+		if [ $LAST_STRING == "=====" ]
+		then
+			sed -i "1 i $FILENAME.json" $FILE
+			echo "$FILENAME.json is sent over DTN"
+			bpsendfile $SOURCE $DESTINATION "$FILE"
+			sed -i "1s/$/, $FILENAME.json/" record.csv	
+			echo "$FILENAME.json sent and added to the record."
+		fi
 	fi
 
 fi

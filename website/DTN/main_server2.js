@@ -6,6 +6,8 @@ var path    = require("path");
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var sass = require('node-sass-middleware');
+var alert = require('alert-node');
+// import alert from 'alert-node'
 // Get a reference to the database service
 //var products = [{Name:"Book", Price:24.99 , Description:"This is a Harry Potter Book", Img:"/image/harrypotter.jpg"},
 //{Name:"Cloth", Price:14.99 , Description:"This is Winterwear", Img:"https://www.burton.com/static/product/W18/13211103960_1.png?impolicy=bglt&imwidth=246"},
@@ -108,63 +110,74 @@ app.post('/signup',function(req,res){
 	// 	}
 	// });
 	// console.log(signup_data);
-	var usr_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2};
+	console.log("connection error")
+	console.log(connection);
+	console.log(signup);
+	var usr_list = {connection:connection,fname:fname,lname:lname, email:email, password1:password1 , password2:password2};
 	var user_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2}
 	console.log(usr_list);
 	file_counts= fs.readFileSync("count.json"); // for counting the signup 
 	track_count = JSON.parse(file_counts)
 	count = track_count.count;
-	console.log("This is signup no" + count)
 	var user_list_string = JSON.stringify(user_list,null,2)
 	user_list_string += "\n====="
+	order_parse_data
 	fs.writeFile('requests/sign_up_requests/'+'signup'+count+'.json',user_list_string, function(err, signup){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
 		};
     console.log("Successfully Written to File.");
-	});
-
-	counts = {"count": count+1}; 
-	fs.writeFile("count.json",JSON.stringify(counts), function(err, signup){
-		if (err) {
-			console.log(err)
-			res.status(404).end();
-		};
-    console.log("Successfully Written to File.");
+    track_count.count += 1;
+    fs.writeFileSync("count.json", JSON.stringify(track_count));
 	});
 	////for confirmation of signup orders
+	if(usr_list.connection){
 		var signup_data = fs.readFileSync('signup_central.json');
 		var signup = JSON.parse(signup_data);
-		//for(var i = 0 ; i < signup.length; i++){
-		if (signup_data === {}){
-				signup.push(usr_list)
-				fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
-					if (err) {
-						console.log(err)
-						res.status(404).end();
-					};
-					console.log("Successfully Written to File.");
-				});
-		};
-	for(i=0; i < signup.length; i++){
-			if(signup[i].email == email){
-				console.log("Signup is not valid")
-				res.send("Signup is not valid")
-				return;
-			}
+		var conf_data = fs.readFileSync('conf_db.json');
+		var conf_db = JSON.parse(conf_data);
+		// for(var i = 0 ; i < signup.length; i++){
+		// 	if (signup[i].email === email){res.send("This email is unavailable")};
+		// };
+		if (signup[email] != null){res.send("This email is unavailable")};
+		// signup.push(usr_list);
+		signup[email] = usr_list;
+		conf_db[email] = {pc_order:[],pc_signup:2};
+		fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
+			if (err) {
+				console.log(err)
+				res.status(404).end();
+			};
+			console.log("Successfully Written to File.");
+		});
+
+		var order_data = fs.readFileSync('order.json');
+		var temp_order = {"orders":[]};
+		var order_parse_data = JSON.parse(order_data);
+		order_parse_data[email]= temp_order;
+		fs.writeFile('order.json',JSON.stringify(order_parse_data), function(err, signup){
+			if (err) {
+				console.log(err)
+				res.status(404).end();
+			};
+			console.log("Successfully Written to File.");
+		});
+		fs.writeFile('conf_db.json',JSON.stringify(conf_db), function(err, signup){
+			if (err) {
+				console.log(err)
+				res.status(404).end();
+			};
+			console.log("Successfully Written to File.");
+		});
 	}
-	var users_list = {fname:fname,lname:lname, email:email, password1:password1 , password2:password2}
-	signup.push(users_list)
-	fs.writeFile('signup_central.json',JSON.stringify(signup), function(err, signup){
-		if (err) {
-			console.log(err)
-			res.status(404).end();
-		};
-		console.log("Successfully Written to File.");
-	});
-
-
+	// for(i=0; i < signup.length; i++){
+	// 		if(signup[i].email == email){
+	// 			console.log("Signup is not valid")
+	// 			res.send("Signup is not valid")
+	// 			return;
+	// 		}
+	// }
 	sess= req.session;
 	sess.email = email;
 	res.redirect('/home');
@@ -182,23 +195,70 @@ app.post('/login',function(req,res){
 	sess = req.session;
 //In this we are assigning email to sess.email variable.
 //email comes from HTML page.
+	console.log(req.body)
 	var email = req.body.email;
 	var password1 = req.body.password1;
 	var password2 = req.body.password2;
 	// // admin.auth().signInWithEmailAndPassword(email, password)
+	// const login_data = fs.readFileSync('user.json');
+	// const login = JSON.parse(login_data);
+	// console.log(login);
+	// for (var i =0 ; i < login.length ; i++){
+	// 	console.log(login[i].email);
+	// 	if (email == login[i].email && password1 == login[i].password1 && password2 == login[i].password2 ){
+	// 		sess.email=email;
+	// 		res.redirect('/home')
+	// 	};
+	// };
+
 	const login_data = fs.readFileSync('signup_central.json');
 	const login = JSON.parse(login_data);
 	console.log(login);
-	for (var i =0 ; i < login.length ; i++){
-		console.log(login[i].email);
-		if (email == login[i].email && password1 == login[i].password1 && password2 == login[i].password2 ){
-			sess.email=email;
-			res.redirect('/home')
+	const pending_conf = fs.readFileSync('conf_db.json');
+	const pending_data = JSON.parse(pending_conf);
+	if (email in login){
+		console.log("present in dict");
+		if (password1 == login[email].password1 && password2 == login[email].password2){
+			sess.email = email;
+			var signup_conf = pending_data[email].pc_signup;
+			var signup_msg = "";
+			var order_status= "";
+			order_status = pending_data[email].pc_order.toString();
+			if (signup_conf ==1 || signup_conf ==0 || order_status!=""){
+				if (signup_conf==1){
+					signup_msg = "Your signup is a Success";
+					order_status = "Your order numbers and their status are:\n" + order_status;
+				}
+				else if (signup_conf == 0){
+					signup_msg = "Your signup is a Failure";
+					if (order_status!=""){
+						signup_msg += " " + "Your following orders have failed too!";
+					}
+					//redirecting to logout if sign up is a failure everytime
+					//or we could delete the sign up data
+					res.redirect('/logout');
+				}
+				login_conf_message = signup_msg + " " + order_status;
+				if (signup_conf!=0){
+				pending_data[email].pc_signup = 2;
+				pending_data[email].pc_order = [];
+				fs.writeFile('conf_db.json',JSON.stringify(pending_data), function(err, login){
+					if (err) {
+						console.log(err)
+						res.status(404).end();
+				};
+				console.log("Successfully Written to File.");
+			});
+			}
+				alert(login_conf_message, 'yad');
+
 		}
-		else{
-			res.send("user name and password not valid")
-		}
-	};
+			res.redirect('/home');
+
+		} 
+	}
+
+
 
 	// then(function(userRecord)
 	// {
@@ -244,6 +304,7 @@ app.post('/buy',function(req,res){
 				break;
 			};
 		};
+		//var total_price = cart[;
 		for(var i = 0 ; i < cart.length; i++){
 			if (cart[i].Name === itemName){
 				cart[i].Quantity += quantity;
@@ -255,7 +316,7 @@ app.post('/buy',function(req,res){
 		console.log(itemName, price)
 		if (!seen){
 			if (!found) {
-							login.push({'email': email , 'cart': [{'Name': itemName , 'Price':price ,'Quantity' : quantity, "Subtotal" : price*quantity, "Description" : req.body.description,"Img":req.body.Img }]})
+							login.push({'email': email ,'cart': [{'Name': itemName , 'Price':price ,'Quantity' : quantity, "Subtotal" : price*quantity, "Description" : req.body.description,"Img":req.body.Img }]})
 							k = login.length -1;
 			}
 			else{
@@ -328,12 +389,21 @@ app.get('/checkout',function(req,res){
 	sess = req.session;
 	var email = sess.email;
 	var cart_data = fs.readFileSync('cart.json');
+	var order_single_db = fs.readFileSync('order_single_db.json');
+	var order_single_parse_db = JSON.parse(order_single_db);
 	var order_data = fs.readFileSync('order.json');
 	var data = JSON.parse(cart_data);
 	var order_parse_data = JSON.parse(order_data);
 	var s_data = [];
 	var a_data =[];
+  for(var i =0 ; i < data.length; i++){
+		if (data[i].email=== email){
+			cart= data[i].cart;
+			break;
+		}
 
+		};
+	//console.log(cart[0].Subtotal+"Cart information");
 	for(var i =0 ; i < data.length; i++){
 		if (data[i].email=== email){
 			console.log("Order has been Placed")
@@ -342,40 +412,60 @@ app.get('/checkout',function(req,res){
 			
 			data[i].cart = [];
 			
-		
 	}};
-	var email_in_order = false
-	for(var i =0 ; i < order_parse_data.length; i++){
-		if (order_parse_data[i].email=== email){
-			var a_data = order_parse_data[i];
+	file_counts= fs.readFileSync("count.json"); // for counting the signup 
+	track_count = JSON.parse(file_counts)
+	var ord_count = track_count.ord_count;
+	var email_in_order = false;
+	var total = 0;
+	for (i=0; i < cart.length;i++){
+		total += cart[i].Subtotal
+	};
+	//orders_no = ordersorder_parse_data[email][orders]
+		order_parse_data[email]["orders"].unshift(ord_count);
+		
+			for (j=0; j< cart.length;j++){
+				order_parse_data[email][ord_count] = {"order_number":ord_count, "status":2, "total":total,item:cart};
+				// order_parse_data[email][ord_count].item.append(cart[j]);s
+			};
+	console.log(order_parse_data);
+
+
+	
+	// code that worked
+	for(var i =0 ; i < order_single_parse_db.length; i++){
+		if (order_single_parse_db[i].email=== email){
+			var a_data = order_single_parse_db[i];
 			//console.log(a_data);
 			var i_order = a_data.order;
 			//console.log(i_order);	
 			var next_order = i_order.length+1;
-			order_single_user = {"id": next_order , "cart": s_data};
-			order_parse_data[i].order.push({"id": next_order, "cart": s_data});
+			var order_with_id = {"id": ord_count, "cart":s_data};
+			order_single_user = {"email":email, "order": order_with_id};
+			order_single_parse_db[i].order.push({"id": next_order, "cart": s_data});
 			email_in_order = true;
 			break;
 		}};
 	if(email_in_order !== true){
-		var order_with_id = {"id": 1, "cart":s_data};
+		var order_with_id = {"id": ord_count, "cart":s_data};
 		order_single_user = {"email":email, "order": order_with_id}; // for the seperate files 
-		order_parse_data.push({"email":email,"order": [order_with_id]});
+		order_single_parse_db.push({"email":email,"order": [order_with_id]});
 	}
+
 	console.log(details.length)
 	console.log(s_data.length)
 	/// for validating the order, looking at the no of stocks 
-  for(key in details){
-		for(j=0 ; j < s_data.length; j++){
-			console.log(typeof details[key].Name);
-			console.log(typeof s_data[j].Name);
-			if(details[key].Name == s_data[j].Name && details[key].Stock < s_data[j].Quantity){
-				console.log("order is not valid")
-				res.send("Order is not valid")
-				return;
-			}
-		}
-	}
+ //  for(key in details){
+	// 	for(j=0 ; j < s_data.length; j++){
+	// 		console.log(typeof details[key].Name);
+	// 		console.log(typeof s_data[j].Name);
+	// 		if(details[key].Name == s_data[j].Name && details[key].Stock < s_data[j].Quantity){
+	// 			console.log("order is not valid")
+	// 			res.send("Order is not valid")
+	// 			return;
+	// 		}
+	// 	}
+	// }
 	for(key in details){
 		console.log("excersg");
 		for(j = 0 ; j < s_data.length; j++){
@@ -392,12 +482,25 @@ app.get('/checkout',function(req,res){
 		};
 		console.log("Successfully Written to File.");
 	});
-	fs.writeFile('signup_order/'+'order_'+email+'.temp.json',JSON.stringify(order_single_user), function(err, cart){
+
+	fs.writeFile('order_single_db.json',JSON.stringify(order_single_parse_db), function(err, cart){
 		if (err) {
 			console.log(err)
 			res.status(404).end();
 		};
 		console.log("Successfully Written to File.");
+	});
+	ord_single_user = JSON.stringify(order_single_user);
+	console.log(ord_single_user);
+	ord_single_user+= "\n====="
+	fs.writeFile('requests/sign_up_requests/'+'order'+ord_count+'.json',ord_single_user, function(err, cart){
+		if (err) {
+			console.log(err)
+			res.status(404).end();
+		};
+		console.log("Successfully Written to File.");
+		track_count.ord_count += 1;
+    	fs.writeFileSync("count.json", JSON.stringify(track_count));
 	});
 	fs.writeFile('cart.json',JSON.stringify(data), function(err, cart){
 		if (err) {
@@ -449,9 +552,44 @@ app.get('/logout', function(req,res){
 	res.redirect('/');
 });
 app.get('/ord_stat', function(req,res){
-	res.send('order status')
+	sess = req.session;
+	var email = sess.email;
+	order_stat = fs.readFileSync('order.json');
+	order_parse_stat = JSON.parse(order_stat);
+	var user_order = order_parse_stat[email];
+	var user_list = user_order["orders"];
+	var my_orders = [];
+	var item_data =[];
+	// for(var j in item.list){
+	// 	key= item_list[i]
+	// }
+	var populate_data =[];
+	//console.log(user_orde);
+	for( i=0; i< user_list.length; i++){
+		key = user_list[i];
+		console.log(key);
+		console.log("up is val of dict");
+		item = user_order[key.toString()].item;
+		populate_data.push(user_order[key.toString()]);
+		for(j=0; j < item.length; j++){
+			item_data.push(item[j]);
+		};
+		
+		// console.log(user_order[key.toString()].item);
+	
+	// for(var i=0;i < user_list.length;i++){
+		
+	// 	if (user_order[JSON.stringify(user_list[i])]["status"]== 2){
+	// 		var stat = {"stat":"The order is incomplete"}
+	// 		// res.render('orders_conf',user_order)
+	// }};
+
+};
+// item_data.push({Name:"a", Quantity:1});
+console.log(item_data)
+res.render('orders_conf',{populate_data:populate_data, item:item_data});
 });
-// code for fetching the temp files and comparing it with the central databse
+// code for fetching the temp files and comparing it with the centrals databse
 app.use('/',function central(req,res){
 	sess = req.session;
 	email = sess.email;

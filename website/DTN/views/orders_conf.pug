@@ -1,0 +1,33 @@
+html
+  head
+    title= title
+  body
+    h1= message
+
+ul
+  each val in populate_data
+    <div class="container"> 
+    
+      <div>
+        <h3> Your order number is :  </h3>
+        div=val.order_number 
+      </div>
+    <p> Total is : </p>
+    div= val.total + "   dollars"
+    </div>
+    if val.status==0
+      <p> Order Status is incomplete </p>
+    else if val.status==2
+      <p> Order Status is pending </p>
+    else if val.status==1
+      <p> Order status is complete </p>
+    each count in item
+      <div>
+        <h5> ITEM_DETAILS: </h5>
+        div= count.Name
+      </div>
+      <div>
+        <p> Quantity :
+        div= count.Quantity
+      </div>
+  
